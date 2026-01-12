@@ -13,8 +13,8 @@ This module manages the installation, configuration, and service state of [atop]
 - Installs the `atop` package
 - Manages the atop configuration file (`/etc/default/atop` or `/etc/sysconfig/atop`)
 - Manages the atop service
-- Optionally manages log retention via systemd timer (for old distros)
-- Optionally configures daily service restarts (for old distros with buggy rotation)
+
+Optionally it can also manage log retation and daily service restart.  This was needed in the olden times.  My impression is that all modern distros takes care of this out of the box.  The elaborate but outdated list of what distro versions it is needed for and not has been removed as of version 1.0.0.  I may consider to reinsert it.
 
 ### Beginning with atop
 
@@ -36,7 +36,7 @@ class { 'atop':
 }
 ```
 
-**Note on interval**: The package default of 600 seconds (10 minutes) is often too long to capture short-lived resource starvation events. A 30-second interval is recommended for production systems - this ensures that problems like memory pressure, CPU spikes, or I/O bottlenecks are logged before the system becomes unresponsive or triggers the OOM killer.
+**Note on interval**: The package default of 600 seconds (10 minutes) is often too long to capture short-lived resource starvation events. A 30-second interval is recommended for production systems - this ensures that problems like memory pressure, CPU spikes, or I/O bottlenecks are logged before the system becomes unresponsive or triggers the OOM killer.  The drawback is that the log fies may become quite big.
 
 ### All parameters
 
