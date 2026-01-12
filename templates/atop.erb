@@ -1,0 +1,15 @@
+# Managed by Puppet
+#
+# /etc/default/atop (or /etc/sysconfig/atop on RHEL)
+
+# Modern systemd-based atop settings
+LOGPATH="<%= @logpath %>"
+LOGINTERVAL="<%= @interval %>"
+<%- if @keepdays -%>
+LOGGENERATIONS="<%= @keepdays %>"
+<%- end -%>
+
+# Legacy variables - should not be needed on modern systems, but some
+# distributions with hybrid systemd/sysvinit setups may still require them
+INTERVAL=<%= @interval %>
+OUTFILE="$LOGPATH/daily.log"

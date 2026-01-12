@@ -1,0 +1,6 @@
+[Unit]
+Description=Clean up old atop log files
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/find <%= $atop::logpath %> -maxdepth 1 -mount -name 'atop_20*' -mtime +<%= $atop::keepdays %> -delete

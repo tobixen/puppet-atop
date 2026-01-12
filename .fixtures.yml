@@ -1,0 +1,6 @@
+fixtures:
+  forge_modules:
+    cron_core:
+      repo: puppetlabs/cron_core
+  symlinks:
+    atop: "#{source_dir}"

@@ -1,34 +1,32 @@
 {
-  "name": "gnubilafrance-atop",
-  "version": "0.0.7",
-  "author": "Baptiste Grenier",
-  "summary": "A module for managing atop",
+  "name": "tobixen-atop",
+  "version": "1.0.0",
+  "author": "tobixen",
+  "summary": "Install and configure atop system and process monitor",
   "license": "MIT",
-  "source": "https://github.com/gnubila-france/puppet-atop",
-  "project_page": "https://github.com/gnubila-france/puppet-atop",
-  "issues_url": "https://github.com/gnubila-france/puppet-atop/issues",
+  "source": "https://github.com/tobixen/puppet-atop",
+  "project_page": "https://github.com/tobixen/puppet-atop",
+  "issues_url": "https://github.com/tobixen/puppet-atop/issues",
   "tags": [
     "sysadmin",
     "monitoring",
-    "atop"
+    "atop",
+    "performance"
   ],
   "operatingsystem_support": [
+    { "operatingsystem": "RedHat" },
+    { "operatingsystem": "CentOS" },
+    { "operatingsystem": "Rocky" },
+    { "operatingsystem": "AlmaLinux" },
+    { "operatingsystem": "Debian" },
+    { "operatingsystem": "Ubuntu" },
+    { "operatingsystem": "Archlinux" }
+  ],
+  "requirements": [
     {
-      "operatingsystem": "RedHat",
-      "operatingsystemrelease": [
-        "5.0",
-        "6.0"
-      ]
-    },
-    {
-      "operatingsystem": "Debian",
-      "operatingsystemrelease": [
-        "Wheezy",
-        "Stable"
-      ]
+      "name": "puppet",
+      "version_requirement": ">= 7.0.0 < 9.0.0"
     }
   ],
-  "dependencies": [
-  
-  ]
+  "dependencies": []
 }

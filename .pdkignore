@@ -1,0 +1,8 @@
+.git/
+.gitignore
+.pdkignore
+.travis.yml
+Gemfile
+Gemfile.lock
+Rakefile
+spec/

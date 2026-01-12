@@ -1,7 +1,7 @@
-## This puppet module lives on https://github.com/tobixen/puppet-atop
-## - it's a fork of https://github.com/gnubila-france/puppet-atop
-## which seems not to be maintained anymore
-
+# @summary Install and configure atop system and process monitor
+#
+# @see https://github.com/tobixen/puppet-atop
+#
 # == Class: atop
 #
 # Allow to install and configure atop.
@@ -24,18 +24,27 @@
 #   Directory were the log will be saved by the service.
 #   Default is /var/log/atop.
 #
+# [*keepdays*]
+#   Number of days to keep atop logs. Sets LOGGENERATIONS in config.
+#   Default is undef (use package default).
+#
+# [*manage_retention*]
+#   If true, create a systemd timer to clean up old logs and disable
+#   logrotate. Only needed on old distros where the package doesn't
+#   handle retention properly. Default is false.
+#
 # [*daily_restarts*]
-#   The puppet module should try to enforce daily restarts
-#   (defaults to "on" for EL, possible bug in atop
-#   package)
+#   If true, create a systemd timer to restart atop daily. Only needed
+#   on old distros with buggy log rotation. Default is false.
 class atop (
-  $package_name = $atop::params::package_name,
-  $service_name = $atop::params::service_name,
-  $service = $atop::params::service,
-  $interval = $atop::params::interval,
-  $logpath = $atop::params::logpath,
-  $keepdays = $atop::params::keepdays,
-  $daily_restarts = $atop::params::daily_restarts
+  $package_name     = $atop::params::package_name,
+  $service_name     = $atop::params::service_name,
+  $service          = $atop::params::service,
+  $interval         = $atop::params::interval,
+  $logpath          = $atop::params::logpath,
+  $keepdays         = $atop::params::keepdays,
+  $manage_retention = $atop::params::manage_retention,
+  $daily_restarts   = $atop::params::daily_restarts,
 ) inherits atop::params {
   $service_state = $service ? {
     true    => 'running',
@@ -56,23 +65,67 @@ class atop (
     ensure => $service_state,
     enable => $service,
   }
-  if ($keepdays != undef and $::osfamily != 'Archlinux') {
-      cron {
-        'remove_atop':
-            hour    => '21',
-            minute  => '13',
-            command => "/usr/bin/find ${logpath} -maxdepth 1 -mount -name atop_20* -mtime +${keepdays} -delete",
-            user    => 'root';
-      }
-      file {
-        '/etc/logrotate.d/atop':
-            ensure => absent
-      }
+  # Clean up old cron-based configuration from previous module versions
+  # Always remove cron.d file regardless of daily_restarts setting
+  file { '/etc/cron.d/atop':
+    ensure => absent,
   }
+  # Remove old cron job from root's crontab (Puppet 7 only - cron type removed in Puppet 8)
+  if versioncmp($facts['puppetversion'], '8.0.0') < 0 {
+    cron { 'remove_atop':
+      ensure => absent,
+      user   => 'root',
+    }
+  }
+
+  # Log cleanup via systemd timer (only when manage_retention is true)
+  if ($manage_retention and $keepdays != undef) {
+    file { '/etc/logrotate.d/atop':
+      ensure => absent,
+    }
+    file { '/etc/systemd/system/atop-cleanup.service':
+      ensure  => file,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => epp('atop/atop-cleanup.service.epp'),
+    }
+    file { '/etc/systemd/system/atop-cleanup.timer':
+      ensure  => file,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => epp('atop/atop-cleanup.timer.epp'),
+      notify  => Service['atop-cleanup.timer'],
+    }
+    service { 'atop-cleanup.timer':
+      ensure  => running,
+      enable  => true,
+      require => File['/etc/systemd/system/atop-cleanup.timer'],
+    }
+  }
+
+  # Daily restart via systemd timer (workaround for atop rotation issues)
   if ($daily_restarts) {
-    file {
-      '/etc/cron.d/atop':
-        content => "0 0 * * * root systemctl try-restart atop\n"
+    file { '/etc/systemd/system/atop-restart.service':
+      ensure  => file,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => epp('atop/atop-restart.service.epp'),
+    }
+    file { '/etc/systemd/system/atop-restart.timer':
+      ensure  => file,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => epp('atop/atop-restart.timer.epp'),
+      notify  => Service['atop-restart.timer'],
+    }
+    service { 'atop-restart.timer':
+      ensure  => running,
+      enable  => true,
+      require => File['/etc/systemd/system/atop-restart.timer'],
     }
   }
 }

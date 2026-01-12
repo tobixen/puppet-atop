@@ -8,25 +8,17 @@ class atop::params {
   $interval = 600
   $logpath = '/var/log/atop'
   $keepdays = undef
-  $conf_file = $::osfamily ? {
+  $manage_retention = false
+  $daily_restarts = false
+  $osfamily = $facts['os']['family']
+  $conf_file = $osfamily ? {
     /Debian|Archlinux/ => '/etc/default/atop',
-    'RedHat' => '/etc/sysconfig/atop',
-    default  => fail('Unsupported Operating System.'),
-  }
-  $daily_restarts = $::osfamily ? {
-    'RedHat' => true,
-    default  => false
+    'RedHat'           => '/etc/sysconfig/atop',
+    default            => fail('Unsupported Operating System.'),
   }
   $conf_file_owner = 'root'
   $conf_file_group = 'root'
   $conf_file_mode = '0644'
-  if ($facts.dig('systemd') == true) or ($facts.dig('systemd') == undef) {
-      $conf_file_template = "atop/atop-Archlinux.erb"
-  } else {
-      $conf_file_template = $::osfamily ? {
-        /Debian|RedHat|Archlinux/ => "atop/atop-${::osfamily}.erb",
-        default  => fail('Unsupported Operating System.'),
-      }
-  }
+  $conf_file_template = 'atop/atop.erb'
 }
 # vim: set et sw=2:

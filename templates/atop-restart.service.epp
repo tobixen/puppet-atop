@@ -1,0 +1,6 @@
+[Unit]
+Description=Restart atop service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl try-restart atop
