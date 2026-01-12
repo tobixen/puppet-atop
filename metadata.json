@@ -1,6 +1,6 @@
 {
   "name": "tobixen-atop",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "author": "tobixen",
   "summary": "Install and configure atop system and process monitor",
   "license": "MIT",
