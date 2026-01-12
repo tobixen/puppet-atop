@@ -1,6 +1,6 @@
 {
   "name": "tobixen-atop",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": "tobixen",
   "summary": "Install and configure atop system and process monitor",
   "license": "MIT",
@@ -28,5 +28,8 @@
       "version_requirement": ">= 7.0.0 < 9.0.0"
     }
   ],
-  "dependencies": []
+  "dependencies": [],
+  "pdk-version": "3.0.1",
+  "template-url": "pdk-default#2.7.1",
+  "template-ref": "tags/2.7.1-0-g9a16c87"
 }
