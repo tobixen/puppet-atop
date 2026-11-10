@@ -1,6 +1,9 @@
 fixtures:
-  forge_modules:
+  # From git rather than the forge: puppet 8.10 fails to unpack forge
+  # tarballs on Ruby 3.4 (Errno::EBADF in closedir)
+  repositories:
     cron_core:
-      repo: puppetlabs/cron_core
+      repo: https://github.com/puppetlabs/puppetlabs-cron_core.git
+      ref: v1.3.0
   symlinks:
     atop: "#{source_dir}"
